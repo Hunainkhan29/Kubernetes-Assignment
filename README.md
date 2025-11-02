@@ -2,45 +2,89 @@
 
 This is a full-stack application with a Node.js/Express frontend and a Flask backend, containerized using Docker.
 
-## Project Structure
-
-```
-.
-├── backend/
-│   ├── Dockerfile
-│   ├── app.py
-│   └── requirements.txt
-├── frontend/
-│   ├── Dockerfile
-│   ├── app.js
-│   ├── package.json
-│   └── views/
-│       └── index.ejs
-├── docker-compose.yml
-└── README.md
-```
-
-## Prerequisites
-
-- Docker
-- Docker Compose
-
-## Getting Started
+## 🚀 Quick Start
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
-   cd <repository-name>
+   git clone https://github.com/Hunainkhan29/Docker-Assignment.git
+   cd Docker-Assignment
    ```
 
-2. **Build and run the application using Docker Compose**
+2. **Run with Docker Compose**
    ```bash
-   docker-compose up --build
+   docker-compose up
    ```
 
 3. **Access the application**
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:5000
+
+## 📦 Docker Images
+- **Frontend**: [hunainkhan29/fullstack-frontend](https://hub.docker.com/r/hunainkhan29/fullstack-frontend)
+- **Backend**: [hunainkhan29/fullstack-backend](https://hub.docker.com/r/hunainkhan29/fullstack-backend)
+
+## 🏗️ Project Structure
+
+```
+.
+├── backend/               # Flask backend
+│   ├── Dockerfile        # Backend Dockerfile
+│   ├── app.py            # Flask application
+│   └── requirements.txt  # Python dependencies
+├── frontend/             # Express frontend
+│   ├── Dockerfile        # Frontend Dockerfile
+│   ├── app.js            # Express application
+│   ├── package.json      # Node.js dependencies
+│   └── views/
+│       └── index.ejs     # Frontend template
+├── docker-compose.yml    # Docker Compose configuration
+└── README.md             # This file
+```
+
+## 🛠️ Development
+
+### Prerequisites
+- Docker
+- Docker Compose
+
+### Running the Application
+
+1. **Development mode**
+   ```bash
+   # Start both frontend and backend
+   docker-compose up
+   
+   # Or run in detached mode
+   docker-compose up -d
+   ```
+
+2. **View logs**
+   ```bash
+   # View all logs
+   docker-compose logs
+   
+   # View logs for a specific service
+   docker-compose logs frontend
+   docker-compose logs backend
+   ```
+
+3. **Stop the application**
+docker-compose down
+   ```
+
+## 🌐 API Endpoints
+
+- `GET /` - Welcome message
+- `POST /process` - Process form data
+
+## 📝 Notes
+- The frontend runs on port 3000
+- The backend API runs on port 5000
+- The services communicate via Docker's internal network
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Features
 
