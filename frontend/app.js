@@ -21,7 +21,9 @@ app.get('/', (req, res) => {
 
 app.post('/submit', async (req, res) => {
     try {
-        const response = await axios.post('http://backend:5000/process', req.body);
+        // Support both Docker Compose (backend) and Kubernetes (backend-service)
+        const backendUrl = process.env.BACKEND_URL || 'http://backend:5000';
+        const response = await axios.post(`${backendUrl}/process`, req.body);
         res.render('index', { result: response.data, error: null });
     } catch (error) {
         console.error('Error:', error.message);

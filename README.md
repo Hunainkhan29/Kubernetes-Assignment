@@ -1,143 +1,93 @@
-# AWS Deployment Guide
+# 🚀 Fullstack Application with Kubernetes
 
-This guide provides instructions for deploying the application on AWS using different architectures.
+A fullstack application with a Flask backend and Express frontend, containerized with Docker and orchestrated with Kubernetes.
 
-## Prerequisites
-- AWS Account
-- AWS CLI configured with appropriate permissions
-- Docker installed locally
-- Git installed
+## 📋 Prerequisites
 
----
+- [Docker](https://www.docker.com/products/docker-desktop) installed and running
+- [kubectl](https://kubernetes.io/docs/tasks/tools/) (Kubernetes command-line tool)
+- [Minikube](https://minikube.sigs.k8s.io/docs/start/) (for local Kubernetes cluster)
+- [Git](https://git-scm.com/downloads) (for cloning the repository)
 
-## 1. Single EC2 Instance Deployment
+## 🏗️ Project Structure
+. ├── backend/ # Flask backend │ ├── Dockerfile # Backend Dockerfile │ ├── app.py # Flask application │ └── requirements.txt # Python dependencies ├── frontend/ # Express frontend │ ├── Dockerfile # Frontend Dockerfile │ ├── app.js # Express application │ ├── package.json # Node.js dependencies │ └── views/ │ └── index.ejs # Frontend template ├── k8s/ # Kubernetes manifests │ ├── backend-deployment.yaml │ ├── backend-service.yaml │ ├── frontend-deployment.yaml │ └── frontend-service.yaml ├── docker-compose.yml # Docker Compose configuration └── README.md # This file
 
-### Steps:
-1. **Launch an EC2 Instance**
-   - AMI: Amazon Linux 2
-   - Instance Type: t2.micro (Free Tier eligible)
-   - Security Group: Open ports 22 (SSH), 80 (HTTP), 3000 (Frontend), 5000 (Backend)
-   - IAM Role: EC2 Role with ECR access
 
-2. **Connect to EC2 Instance**
+## 🚀 Quick Start with Docker Compose
+
+1. **Clone the repository**:
    ```bash
-   ssh -i your-key.pem ec2-user@your-instance-public-dns
-   ```
+   git clone <your-repository-url>
+   cd Docker
+Start the application:
+bash
+docker-compose up -d
+Access the application:
+Frontend: http://localhost:3000
+Backend API: http://localhost:5000
+☸️ Kubernetes Deployment
+1. Start Minikube
+bash
+minikube start --driver=docker
+minikube status
+2. Build and Push Docker Images
+bash
+docker-compose build
+docker tag fullstack-backend yourusername/fullstack-backend:latest
+docker tag fullstack-frontend yourusername/fullstack-frontend:latest
+docker push yourusername/fullstack-backend:latest
+docker push yourusername/fullstack-frontend:latest
+3. Deploy to Kubernetes
+bash
+cd k8s
+kubectl apply -f .
+4. Access the Application
+bash
+minikube service frontend-service
+# OR
+kubectl port-forward service/frontend-service 3000:3000
+🛠️ Useful Commands
+Kubernetes
+bash
+# View all resources
+kubectl get all
 
-3. **Install Dependencies**
-   ```bash
-   sudo yum update -y
-   sudo amazon-linux-extras install docker -y
-   sudo service docker start
-   sudo usermod -a -G docker ec2-user
-   sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-   sudo chmod +x /usr/local/bin/docker-compose
-   ```
+# View pod logs
+kubectl logs <pod-name>
 
-4. **Deploy Application**
-   ```bash
-   git clone https://github.com/Hunainkhan29/Docker-Assignment.git
-   cd Docker-Assignment
-   docker-compose up -d
-   ```
+# Scale deployments
+kubectl scale deployment backend-deployment --replicas=3
+kubectl scale deployment frontend-deployment --replicas=3
+Docker
+bash
+# Build images
+docker-compose build
 
-5. **Access Application**
-   - Frontend: http://your-instance-public-dns:3000
-   - Backend: http://your-instance-public-dns:5000
+# Start containers
+docker-compose up -d
 
----
+# View logs
+docker-compose logs -f
+🧹 Cleanup
+Docker Compose
+bash
+docker-compose down
+Kubernetes
+bash
+# Delete all resources
+kubectl delete -f .
 
-## 2. Separate EC2 Instances
+# Stop Minikube
+minikube stop
 
-### Frontend Instance
-1. **Launch EC2 Instance**
-   - Same as above, but only open ports 80 and 3000
-
-2. **Deploy Frontend**
-   ```bash
-   # Install Docker and Docker Compose (same as above)
-   git clone https://github.com/Hunainkhan29/Docker-Assignment.git
-   cd Docker-Assignment/frontend
-   docker build -t frontend .
-   docker run -d -p 3000:3000 frontend
-   ```
-
-### Backend Instance
-1. **Launch EC2 Instance**
-   - Same as above, but only open ports 22 and 5000
-
-2. **Deploy Backend**
-   ```bash
-   # Install Docker and Docker Compose (same as above)
-   git clone https://github.com/Hunainkhan29/Docker-Assignment.git
-   cd Docker-Assignment/backend
-   docker build -t backend .
-   docker run -d -p 5000:5000 backend
-   ```
-
-3. **Update Frontend Configuration**
-   In the frontend's `app.js`, update the backend URL to point to the backend instance's public DNS.
-
----
-
-## 3. ECS with ECR and VPC
-
-### 1. Push Images to ECR
-
-```bash
-# Login to ECR
-aws ecr get-login-password --region your-region | docker login --username AWS --password-stdin your-account-id.dkr.ecr.your-region.amazonaws.com
-
-# Create ECR Repositories
-aws ecr create-repository --repository-name fullstack-frontend
-aws ecr create-repository --repository-name fullstack-backend
-
-# Tag and push images
-docker tag hunainkhan29/fullstack-frontend:latest your-account-id.dkr.ecr.your-region.amazonaws.com/fullstack-frontend:latest
-docker push your-account-id.dkr.ecr.your-region.amazonaws.com/fullstack-frontend:latest
-
-docker tag hunainkhan29/fullstack-backend:latest your-account-id.dkr.ecr.your-region.amazonaws.com/fullstack-backend:latest
-docker push your-account-id.dkr.ecr.your-region.amazonaws.com/fullstack-backend:latest
-```
-
-### 2. Create ECS Cluster
-1. Go to ECS Console
-2. Create a new cluster
-3. Select "Networking only" and click "Next"
-4. Configure VPC and subnets
-5. Create an Application Load Balancer
-
-### 3. Create Task Definitions
-Create two task definitions (one for frontend, one for backend) with container definitions pointing to your ECR images.
-
-### 4. Create Services
-Create services for both frontend and backend tasks, attaching them to your load balancer.
-
-### 5. Access Application
-Use the DNS name of your load balancer to access the application.
-
----
-
-## Cost Optimization
-- Use t2.micro instances for development (Free Tier eligible)
-- Set up billing alerts in AWS
-- Stop instances when not in use
-- Consider using AWS Fargate for serverless containers
-
-## Security Best Practices
-- Use security groups to restrict access
-- Store sensitive data in AWS Secrets Manager
-- Enable VPC Flow Logs
-- Use IAM roles instead of access keys when possible
-
-## Monitoring
-- Set up CloudWatch Alarms
-- Enable Container Insights for ECS
-- Monitor costs in AWS Cost Explorer
-
-## Cleanup
-Remember to delete all resources when not in use to avoid unnecessary charges:
-- Terminate EC2 instances
-- Delete ECR repositories
-- Delete ECS clusters
-- Remove unused security groups and load balancers
+# Delete Minikube cluster
+minikube delete
+📝 Troubleshooting
+Common Issues
+Port already in use: Stop any services using ports 3000 or 5000
+Image pull errors: Make sure you've built and pushed images to Docker Hub
+Pods not starting: Check logs with kubectl logs <pod-name>
+📚 Documentation
+Kubernetes Documentation
+Minikube Documentation
+Docker Documentation

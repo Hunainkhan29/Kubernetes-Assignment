@@ -37,6 +37,11 @@ This is a full-stack application with a Node.js/Express frontend and a Flask bac
 │   ├── package.json      # Node.js dependencies
 │   └── views/
 │       └── index.ejs     # Frontend template
+├── k8s/                  # Kubernetes manifests
+│   ├── backend-deployment.yaml
+│   ├── backend-service.yaml
+│   ├── frontend-deployment.yaml
+│   └── frontend-service.yaml
 ├── docker-compose.yml    # Docker Compose configuration
 └── README.md             # This file
 ```
