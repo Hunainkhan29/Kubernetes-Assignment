@@ -25,7 +25,7 @@ docker-compose up -d
 Access the application:
 Frontend: http://localhost:3000
 Backend API: http://localhost:5000
-☸️ Kubernetes Deployment
+## ☸️ Kubernetes Deployment
 1. Start Minikube
 bash
 minikube start --driver=docker
@@ -83,11 +83,12 @@ minikube stop
 # Delete Minikube cluster
 minikube delete
 📝 Troubleshooting
-Common Issues
+## Common Issues
 Port already in use: Stop any services using ports 3000 or 5000
 Image pull errors: Make sure you've built and pushed images to Docker Hub
 Pods not starting: Check logs with kubectl logs <pod-name>
-📚 Documentation
+
+##📚 Documentation
 Kubernetes Documentation
 Minikube Documentation
 Docker Documentation
